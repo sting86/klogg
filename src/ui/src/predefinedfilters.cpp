@@ -113,7 +113,7 @@ void PredefinedFiltersCollection::saveToStorage( QSettings& settings ) const
     settings.beginGroup( "PredefinedFiltersCollection" );
     settings.setValue( "version", MultiPredefinedFiltersCollection_VERSION );
 
-    settings.remove( "filter_groups" );
+    settings.remove( "" );
 
     settings.beginWriteArray( "filter_groups" );
 
