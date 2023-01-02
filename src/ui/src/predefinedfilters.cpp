@@ -111,9 +111,9 @@ void PredefinedFiltersCollection::saveToStorage( QSettings& settings ) const
     LOG_DEBUG << "PredefinedFiltersCollection::saveToStorage";
 
     settings.beginGroup( "PredefinedFiltersCollection" );
+    settings.remove( "" );
     settings.setValue( "version", MultiPredefinedFiltersCollection_VERSION );
 
-    settings.remove( "" );
 
     settings.beginWriteArray( "filter_groups" );
 
