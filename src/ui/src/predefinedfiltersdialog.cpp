@@ -327,15 +327,6 @@ void PredefinedFiltersDialog::importFilters()
 
 void PredefinedFiltersDialog::exportFilters()
 {
-    const auto file = QFileDialog::getSaveFileName( this, "Export predefined filters", "",
-                                                    tr( "Predefined filters (*.conf)" ) );
-
-    if ( file.isEmpty() ) {
-        return;
-    }
-
-    QSettings settings{ file, QSettings::IniFormat };
-
     PredefinedFiltersCollection collection;
     QList<QTreeWidgetItem*> selection = filtersTreeWidget->selectedItems();
     std::optional<QSet<QString>> selectedGroups = {};
@@ -347,12 +338,37 @@ void PredefinedFiltersDialog::exportFilters()
             if (item->parent() ) {
                 sel = item->parent();
             }
-            std::cout << sel->text(0).toStdString() << "\n";
+            LOG_DEBUG << sel->text(0) << "\n";
             selectedGroups->insert(sel->text(0));
         }
     }
 
     PredefinedFiltersCollection::GroupCollection filters = readFiltersTable(selectedGroups);
+
+    QString proposedFileName = "filters";
+
+    if ( not selection.empty() ) {
+
+        for( const auto &f: filters ) {
+            if ( proposedFileName.length() ) {
+                proposedFileName += QString("_");
+            }
+            proposedFileName += f.name;
+        }
+    }
+
+    proposedFileName.truncate(MAX_READABLE_FILE_NAME_LEN);
+    proposedFileName += QString(".conf");
+
+    const auto file = QFileDialog::getSaveFileName( this, "Export predefined filters", proposedFileName,
+                                                    tr( "Predefined filters (*.conf)" ) );
+
+
+    if ( file.isEmpty() ) {
+        return;
+    }
+
+    QSettings settings{ file, QSettings::IniFormat };
 
     collection.setFilters( filters );
     collection.saveToStorage( settings );

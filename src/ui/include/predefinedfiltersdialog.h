@@ -47,6 +47,7 @@
 #include "ui_predefinedfiltersdialog.h"
 
 class PredefinedFiltersDialog : public QDialog, public Ui::PredefinedFiltersDialog {
+    static constexpr int MAX_READABLE_FILE_NAME_LEN = 64;
     Q_OBJECT
 
   public:
