@@ -65,17 +65,18 @@ class PredefinedFiltersDialog : public QDialog, public Ui::PredefinedFiltersDial
     void importFilters();
 
     void resolveStandardButton( QAbstractButton* button );
-Q_SIGNALS:
+  Q_SIGNALS:
     void optionsChanged();
 
   private:
     void addFilterRow( const QString& newFilter );
-    void populateFiltersTable(const PredefinedFiltersCollection::GroupCollection &filters);
+    void populateFiltersTable( const PredefinedFiltersCollection::GroupCollection& filters );
 
     void saveSettings() const;
-    PredefinedFiltersCollection::GroupCollection readFiltersTable(std::optional<QSet<QString> > selection = {}) const;
+    PredefinedFiltersCollection::GroupCollection
+    readFiltersTable( std::optional<QSet<QString>> selection = {} ) const;
 
-    QString getUniqueGroupName(QString name);
+    QString getUniqueGroupName( QString name );
 };
 
 #endif

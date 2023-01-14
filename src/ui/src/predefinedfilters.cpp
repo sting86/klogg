@@ -40,7 +40,8 @@
 
 #include "log.h"
 
-void PredefinedFiltersCollection::retrieveFromStorage( QSettings& settings, QString fileName, bool clear)
+void PredefinedFiltersCollection::retrieveFromStorage( QSettings& settings, QString fileName,
+                                                       bool clear )
 {
     LOG_DEBUG << "PredefinedFiltersCollection::retrieveFromStorage";
 
@@ -50,26 +51,24 @@ void PredefinedFiltersCollection::retrieveFromStorage( QSettings& settings, QStr
 
         if ( fileVersion <= PredefinedFiltersCollection_VERSION ) {
 
-            if (clear) {
+            if ( clear ) {
                 filterGroups_.clear();
             }
 
             int size = settings.beginReadArray( "filters" );
-            filterGroups_.push_back( { fileName, {} });
+            filterGroups_.push_back( { fileName, {} } );
 
             for ( int i = 0; i < size; ++i ) {
                 settings.setArrayIndex( i );
 
-                filterGroups_.back().filters.push_back({
-                                                           settings.value( "name" ).toString(),
-                                                           settings.value( "filter" ).toString(),
-                                                           settings.value( "regex", true ).toBool()
-                                                        });
+                filterGroups_.back().filters.push_back(
+                    { settings.value( "name" ).toString(), settings.value( "filter" ).toString(),
+                      settings.value( "regex", true ).toBool() } );
             }
             settings.endArray();
         }
         if ( fileVersion == MultiPredefinedFiltersCollection_VERSION ) {
-            if (clear) {
+            if ( clear ) {
                 filterGroups_.clear();
             }
 
@@ -82,18 +81,17 @@ void PredefinedFiltersCollection::retrieveFromStorage( QSettings& settings, QStr
             }
             settings.endArray();
 
-            for (const auto group: filterGroups) {
+            for ( const auto group : filterGroups ) {
                 size = settings.beginReadArray( group );
 
-                filterGroups_.push_back( { group, {} });
+                filterGroups_.push_back( { group, {} } );
 
                 for ( int i = 0; i < size; ++i ) {
                     settings.setArrayIndex( i );
-                    filterGroups_.back().filters.push_back({
-                                                               settings.value( "name" ).toString(),
-                                                               settings.value( "filter" ).toString(),
-                                                               settings.value( "regex", true ).toBool()
-                                                            });
+                    filterGroups_.back().filters.push_back(
+                        { settings.value( "name" ).toString(),
+                          settings.value( "filter" ).toString(),
+                          settings.value( "regex", true ).toBool() } );
                 }
 
                 settings.endArray();
@@ -113,7 +111,6 @@ void PredefinedFiltersCollection::saveToStorage( QSettings& settings ) const
     settings.beginGroup( "PredefinedFiltersCollection" );
     settings.remove( "" );
     settings.setValue( "version", MultiPredefinedFiltersCollection_VERSION );
-
 
     settings.beginWriteArray( "filter_groups" );
 
@@ -142,7 +139,7 @@ void PredefinedFiltersCollection::saveToStorage( QSettings& settings ) const
     settings.endGroup();
 }
 
-void PredefinedFiltersCollection::saveToStorage(const GroupCollection &filters )
+void PredefinedFiltersCollection::saveToStorage( const GroupCollection& filters )
 {
     filterGroups_ = filters;
     this->save();

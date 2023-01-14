@@ -59,7 +59,7 @@ struct PredefinedFilterGroup {
 // Represents collection of filters read from settings file.
 class PredefinedFiltersCollection final : public Persistable<PredefinedFiltersCollection> {
   public:
-    using GroupCollection = QList< PredefinedFilterGroup >;
+    using GroupCollection = QList<PredefinedFilterGroup>;
 
     static const char* persistableName()
     {
@@ -68,9 +68,10 @@ class PredefinedFiltersCollection final : public Persistable<PredefinedFiltersCo
 
     GroupCollection getSyncedFilters();
     GroupCollection getFilters() const;
-    void setFilters(const GroupCollection &filters );
+    void setFilters( const GroupCollection& filters );
 
-    void retrieveFromStorage(QSettings& settings, QString fileName="default", bool clear=true);
+    void retrieveFromStorage( QSettings& settings, QString fileName = "default",
+                              bool clear = true );
     void saveToStorage( QSettings& settings ) const;
     void saveToStorage( const GroupCollection& filters );
 
@@ -81,6 +82,6 @@ class PredefinedFiltersCollection final : public Persistable<PredefinedFiltersCo
     GroupCollection filterGroups_;
 };
 
-Q_DECLARE_METATYPE(PredefinedFilter)
+Q_DECLARE_METATYPE( PredefinedFilter )
 
 #endif

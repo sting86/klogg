@@ -57,32 +57,34 @@
 
 #include <iostream>
 
-class CenteredCheckbox : public QWidget
-{
-    public: 
-        explicit CenteredCheckbox(QWidget* parent = nullptr) : QWidget(parent)
-        {
-            auto layout = new QHBoxLayout;
-            layout->setAlignment(Qt::AlignCenter);
-            checkbox_ = new QCheckBox;
-            layout->addWidget(checkbox_);
-            this->setLayout(layout);
+class CenteredCheckbox : public QWidget {
+  public:
+    explicit CenteredCheckbox( QWidget* parent = nullptr )
+        : QWidget( parent )
+    {
+        auto layout = new QHBoxLayout;
+        layout->setAlignment( Qt::AlignCenter );
+        checkbox_ = new QCheckBox;
+        layout->addWidget( checkbox_ );
+        this->setLayout( layout );
 
-            QPalette palette = this->palette();
-            palette.setColor(QPalette::Base, palette.color(QPalette::Window));
-            checkbox_->setPalette(palette);
-        }
+        QPalette palette = this->palette();
+        palette.setColor( QPalette::Base, palette.color( QPalette::Window ) );
+        checkbox_->setPalette( palette );
+    }
 
-        bool isChecked() const {
-            return checkbox_->isChecked();
-        }
+    bool isChecked() const
+    {
+        return checkbox_->isChecked();
+    }
 
-        void setChecked(bool isChecked) {
-            checkbox_->setChecked(isChecked);
-        }
+    void setChecked( bool isChecked )
+    {
+        checkbox_->setChecked( isChecked );
+    }
 
-    private:
-        QCheckBox* checkbox_;
+  private:
+    QCheckBox* checkbox_;
 };
 
 PredefinedFiltersDialog::PredefinedFiltersDialog( QWidget* parent )
@@ -90,7 +92,7 @@ PredefinedFiltersDialog::PredefinedFiltersDialog( QWidget* parent )
 {
     setupUi( this );
 
-    populateFiltersTable( PredefinedFiltersCollection::getSynced().getFilters());
+    populateFiltersTable( PredefinedFiltersCollection::getSynced().getFilters() );
 
     connect( addFilterButton, &QToolButton::clicked, this, &PredefinedFiltersDialog::addFilter );
     connect( removeFilterButton, &QToolButton::clicked, this,
@@ -123,42 +125,38 @@ PredefinedFiltersDialog::PredefinedFiltersDialog( const QString& newFilter, QWid
     }
 }
 
-QString PredefinedFiltersDialog::getUniqueGroupName(QString name)
+QString PredefinedFiltersDialog::getUniqueGroupName( QString name )
 {
-    if ( not filtersTreeWidget->findItems(name, Qt::MatchFlag::MatchExactly).empty() ) {
-        name += QString("_new");
-        name = getUniqueGroupName(name);
+    if ( not filtersTreeWidget->findItems( name, Qt::MatchFlag::MatchExactly ).empty() ) {
+        name += QString( "_new" );
+        name = getUniqueGroupName( name );
     }
 
     return name;
 }
 
 void PredefinedFiltersDialog::populateFiltersTable(
-    const PredefinedFiltersCollection::GroupCollection& filters)
+    const PredefinedFiltersCollection::GroupCollection& filters )
 {
 
-    filtersTreeWidget->setColumnCount(4);
+    filtersTreeWidget->setColumnCount( 4 );
     filtersTreeWidget->setHeaderLabels( QStringList() << "Group"
                                                       << "Name"
                                                       << "Pattern"
                                                       << "Regex" );
 
     for ( const auto& group : filters ) {
-        QString groupName = getUniqueGroupName(group.name);
+        QString groupName = getUniqueGroupName( group.name );
 
-        QTreeWidgetItem *item = new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), QStringList( QString(groupName)));
+        QTreeWidgetItem* item = new QTreeWidgetItem( static_cast<QTreeWidget*>( nullptr ),
+                                                     QStringList( QString( groupName ) ) );
         item->setFlags( item->flags() | Qt::ItemIsEditable );
-        filtersTreeWidget->addTopLevelItem(item);
-
+        filtersTreeWidget->addTopLevelItem( item );
 
         for ( const auto& filter : group.filters ) {
-            QTreeWidgetItem *row = new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr),
-                                                                   QStringList( {
-                                                                                    QString(""),
-                                                                                    filter.name,
-                                                                                    filter.pattern
-                                                                                }
-                                                                                ));
+            QTreeWidgetItem* row = new QTreeWidgetItem(
+                static_cast<QTreeWidget*>( nullptr ),
+                QStringList( { QString( "" ), filter.name, filter.pattern } ) );
             row->setFlags( row->flags() | Qt::ItemIsEditable );
             item->addChild( row );
             row->setCheckState( 3, filter.useRegex ? Qt::Checked : Qt::Unchecked );
@@ -171,23 +169,25 @@ void PredefinedFiltersDialog::saveSettings() const
     PredefinedFiltersCollection::getSynced().saveToStorage( readFiltersTable() );
 }
 
-PredefinedFiltersCollection::GroupCollection PredefinedFiltersDialog::readFiltersTable(std::optional<QSet<QString>> selection) const
+PredefinedFiltersCollection::GroupCollection
+PredefinedFiltersDialog::readFiltersTable( std::optional<QSet<QString>> selection ) const
 {
     PredefinedFiltersCollection::GroupCollection currentFilters;
 
-    for (int i = 0; i < filtersTreeWidget->topLevelItemCount(); ++i ) {
-        QTreeWidgetItem* item = filtersTreeWidget->topLevelItem(i);
-        QString group = item->text(0);
-        if (selection && not selection->contains(group)) {
+    for ( int i = 0; i < filtersTreeWidget->topLevelItemCount(); ++i ) {
+        QTreeWidgetItem* item = filtersTreeWidget->topLevelItem( i );
+        QString group = item->text( 0 );
+        if ( selection && not selection->contains( group ) ) {
             continue;
-        } else {
-            currentFilters.push_back( { group, {} });
+        }
+        else {
+            currentFilters.push_back( { group, {} } );
 
-            for(int j = 0; j < item->childCount(); ++j) {
-                QTreeWidgetItem* child = item->child(j);
-                QString name = child->text(1);
-                QString value = child->text(2);
-                bool useRegex = child->checkState(3) == Qt::Checked ? true : false;
+            for ( int j = 0; j < item->childCount(); ++j ) {
+                QTreeWidgetItem* child = item->child( j );
+                QString name = child->text( 1 );
+                QString value = child->text( 2 );
+                bool useRegex = child->checkState( 3 ) == Qt::Checked ? true : false;
 
                 if ( !name.isEmpty() && !value.isEmpty() ) {
                     currentFilters.back().filters.push_back( { name, value, useRegex } );
@@ -210,34 +210,32 @@ void PredefinedFiltersDialog::addFilterRow( const QString& newFilter )
     QTreeWidgetItem* sel = nullptr;
 
     if ( not selection.empty() ) {
-        for ( auto item: selection ) {
+        for ( auto item : selection ) {
             sel = item;
-            if (item->parent() ) {
+            if ( item->parent() ) {
                 sel = item->parent();
             }
             break;
         }
-    } else {
+    }
+    else {
         QString filter = newFilter;
-        if (not filter.size() ) {
-            filter = QString("filter group");
+        if ( not filter.size() ) {
+            filter = QString( "filter group" );
         }
-        QString groupName = getUniqueGroupName(filter);
-        QTreeWidgetItem *item = new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), QStringList( QString(groupName)));
+        QString groupName = getUniqueGroupName( filter );
+        QTreeWidgetItem* item = new QTreeWidgetItem( static_cast<QTreeWidget*>( nullptr ),
+                                                     QStringList( QString( groupName ) ) );
         item->setFlags( item->flags() | Qt::ItemIsEditable );
-        filtersTreeWidget->addTopLevelItem(item);
+        filtersTreeWidget->addTopLevelItem( item );
         sel = item;
     }
-        QTreeWidgetItem *row = new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr),
-                                                               QStringList( {
-                                                                                QString(""),
-                                                                                QString("filter name"),
-                                                                                QString("filter")
-                                                                            }
-                                                                            ));
-        row->setFlags( row->flags() | Qt::ItemIsEditable );
-        sel->addChild( row );
-        row->setCheckState( 3, Qt::Unchecked );
+    QTreeWidgetItem* row = new QTreeWidgetItem(
+        static_cast<QTreeWidget*>( nullptr ),
+        QStringList( { QString( "" ), QString( "filter name" ), QString( "filter" ) } ) );
+    row->setFlags( row->flags() | Qt::ItemIsEditable );
+    sel->addChild( row );
+    row->setCheckState( 3, Qt::Unchecked );
 }
 
 void PredefinedFiltersDialog::removeFilter()
@@ -249,65 +247,67 @@ void PredefinedFiltersDialog::removeFilter()
 
 void PredefinedFiltersDialog::moveFilterUp()
 {
-        QTreeWidgetItem *item = filtersTreeWidget->currentItem();
+    QTreeWidgetItem* item = filtersTreeWidget->currentItem();
 
-        if (not item ) {
-            return;
-        }
+    if ( not item ) {
+        return;
+    }
 
-        if ( not item ->isSelected() ) {
-            return;
-        }
+    if ( not item->isSelected() ) {
+        return;
+    }
 
-        int index = filtersTreeWidget->currentIndex().row();
-        QTreeWidgetItem *s = nullptr;
+    int index = filtersTreeWidget->currentIndex().row();
+    QTreeWidgetItem* s = nullptr;
 
-        if( item->childCount() ) {
-            s = filtersTreeWidget->takeTopLevelItem(index);
-            filtersTreeWidget->insertTopLevelItem(index - 1 >=0 ? index - 1 : 0, s);
-        } else {
-            item = item->parent();
-            s = item->takeChild(index);
-            item->insertChild(index - 1 >=0 ? index - 1 : 0, s);
-        }
+    if ( item->childCount() ) {
+        s = filtersTreeWidget->takeTopLevelItem( index );
+        filtersTreeWidget->insertTopLevelItem( index - 1 >= 0 ? index - 1 : 0, s );
+    }
+    else {
+        item = item->parent();
+        s = item->takeChild( index );
+        item->insertChild( index - 1 >= 0 ? index - 1 : 0, s );
+    }
 
-        s->setSelected(true);
-        filtersTreeWidget->setCurrentItem(s);
+    s->setSelected( true );
+    filtersTreeWidget->setCurrentItem( s );
 }
 
 void PredefinedFiltersDialog::moveFilterDown()
 {
-    QTreeWidgetItem *item = filtersTreeWidget->currentItem();
+    QTreeWidgetItem* item = filtersTreeWidget->currentItem();
 
-    if (not item ) {
+    if ( not item ) {
         return;
     }
 
-    if ( not item ->isSelected() ) {
+    if ( not item->isSelected() ) {
         return;
     }
-
 
     int index = filtersTreeWidget->currentIndex().row();
-    QTreeWidgetItem *s = nullptr;
+    QTreeWidgetItem* s = nullptr;
 
-    if( item->childCount() ) {
-        s = filtersTreeWidget->takeTopLevelItem(index);
-        filtersTreeWidget->insertTopLevelItem(index + 1 <= filtersTreeWidget->topLevelItemCount() ? index + 1 : index, s);
-    } else {
+    if ( item->childCount() ) {
+        s = filtersTreeWidget->takeTopLevelItem( index );
+        filtersTreeWidget->insertTopLevelItem(
+            index + 1 <= filtersTreeWidget->topLevelItemCount() ? index + 1 : index, s );
+    }
+    else {
         item = item->parent();
-        s = item->takeChild(index);
-        item->insertChild(index + 1 <= item->childCount() ? index + 1 : index, s);
+        s = item->takeChild( index );
+        item->insertChild( index + 1 <= item->childCount() ? index + 1 : index, s );
     }
 
-    s->setSelected(true);
-    filtersTreeWidget->setCurrentItem(s);
+    s->setSelected( true );
+    filtersTreeWidget->setCurrentItem( s );
 }
 
 void PredefinedFiltersDialog::importFilters()
 {
     const auto files = QFileDialog::getOpenFileNames( this, "Select file to import", "",
-                                                    "Predefined filters (*.conf)" );
+                                                      "Predefined filters (*.conf)" );
 
     if ( not files.size() ) {
         return;
@@ -315,14 +315,14 @@ void PredefinedFiltersDialog::importFilters()
 
     PredefinedFiltersCollection collection;
 
-    for (QString file: files) {
+    for ( QString file : files ) {
         LOG_DEBUG << "Loading predefined filters from " << file;
         QSettings settings{ file, QSettings::IniFormat };
 
-        collection.retrieveFromStorage( settings, QFileInfo(file).baseName(), false);
+        collection.retrieveFromStorage( settings, QFileInfo( file ).baseName(), false );
     }
 
-    populateFiltersTable( collection.getFilters());
+    populateFiltersTable( collection.getFilters() );
 }
 
 void PredefinedFiltersDialog::exportFilters()
@@ -333,36 +333,35 @@ void PredefinedFiltersDialog::exportFilters()
 
     if ( not selection.empty() ) {
         selectedGroups = QSet<QString>();
-        for ( auto item: selection ) {
+        for ( auto item : selection ) {
             auto sel = item;
-            if (item->parent() ) {
+            if ( item->parent() ) {
                 sel = item->parent();
             }
-            LOG_DEBUG << sel->text(0) << "\n";
-            selectedGroups->insert(sel->text(0));
+            LOG_DEBUG << sel->text( 0 ) << "\n";
+            selectedGroups->insert( sel->text( 0 ) );
         }
     }
 
-    PredefinedFiltersCollection::GroupCollection filters = readFiltersTable(selectedGroups);
+    PredefinedFiltersCollection::GroupCollection filters = readFiltersTable( selectedGroups );
 
     QString proposedFileName = "filters";
 
     if ( not selection.empty() ) {
 
-        for( const auto &f: filters ) {
+        for ( const auto& f : filters ) {
             if ( proposedFileName.length() ) {
-                proposedFileName += QString("_");
+                proposedFileName += QString( "_" );
             }
             proposedFileName += f.name;
         }
     }
 
-    proposedFileName.truncate(MAX_READABLE_FILE_NAME_LEN);
-    proposedFileName += QString(".conf");
+    proposedFileName.truncate( MAX_READABLE_FILE_NAME_LEN );
+    proposedFileName += QString( ".conf" );
 
-    const auto file = QFileDialog::getSaveFileName( this, "Export predefined filters", proposedFileName,
-                                                    tr( "Predefined filters (*.conf)" ) );
-
+    const auto file = QFileDialog::getSaveFileName(
+        this, "Export predefined filters", proposedFileName, tr( "Predefined filters (*.conf)" ) );
 
     if ( file.isEmpty() ) {
         return;

@@ -117,10 +117,11 @@ void PredefinedFiltersComboBox::setTitle( const QString& title )
     model_->insertRow( 0, titleItem );
 }
 
-void PredefinedFiltersComboBox::insertFilters(const PredefinedFiltersCollection::GroupCollection &filters )
+void PredefinedFiltersComboBox::insertFilters(
+    const PredefinedFiltersCollection::GroupCollection& filters )
 {
     for ( const auto& group : filters ) {
-        for(const auto& filter: group.filters) {
+        for ( const auto& filter : group.filters ) {
             auto* item = new QStandardItem( filter.name );
 
             item->setFlags( Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );
