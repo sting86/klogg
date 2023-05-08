@@ -154,6 +154,7 @@ class LogFilteredData : public AbstractLogData {
     std::vector<QString> doGetExpandedLines( LineNumber first, LinesCount number ) const override;
     std::vector<QString> doGetLines( LineNumber first, LinesCount number,
                                      const std::function<QString( LineNumber )>& lineGetter ) const;
+    LineNumber doGetLineNumber( LineNumber index ) const override;
     LinesCount doGetNbLine() const override;
     LineLength doGetMaxLength() const override;
     LineLength doGetLineLength( LineNumber line ) const override;
@@ -200,7 +201,8 @@ class LogFilteredData : public AbstractLogData {
         LineLength maxLength;
     };
 
-    using SearchCacheKey = std::tuple<RegularExpressionPattern, LineNumber::UnderlyingType, LineNumber::UnderlyingType>;
+    using SearchCacheKey = std::tuple<RegularExpressionPattern, LineNumber::UnderlyingType,
+                                      LineNumber::UnderlyingType>;
     struct SearchCacheKeyHash {
         template <class T>
         void hash_combine( std::size_t& seed, const T& v ) const
